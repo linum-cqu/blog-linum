@@ -1,0 +1,889 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="linum">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="ROS-OpenSSL-X509-Certificate-Verification 重庆大学国家卓越工程师学院-智能汽车软件-智能网联汽车信息安全-实验 ✨✨✨实验环境✨✨✨： Windows 10 Linux Subsystem BRANCH: vb_release RELEASE: Ubuntu 20.04.3 LTS KERNEL: Linux 5.10.16.3-microsoft-sta">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ROS OpenSSL X509 证书链构建及自定义验证">
+<meta property="og:url" content="https://blog.linum.top/2024/08/27/ROS-OpenSSL-X509-%E8%AF%81%E4%B9%A6%E9%93%BE%E6%9E%84%E5%BB%BA%E5%8F%8A%E8%87%AA%E5%AE%9A%E4%B9%89%E9%AA%8C%E8%AF%81/index.html">
+<meta property="og:site_name" content="Linum Blog">
+<meta property="og:description" content="ROS-OpenSSL-X509-Certificate-Verification 重庆大学国家卓越工程师学院-智能汽车软件-智能网联汽车信息安全-实验 ✨✨✨实验环境✨✨✨： Windows 10 Linux Subsystem BRANCH: vb_release RELEASE: Ubuntu 20.04.3 LTS KERNEL: Linux 5.10.16.3-microsoft-sta">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://s2.loli.net/2024/09/02/NE7PJtTXwmfVDj8.png">
+<meta property="og:image" content="https://s2.loli.net/2024/09/02/jUwvPlg9cydFV4C.png">
+<meta property="og:image" content="https://s2.loli.net/2024/09/02/dfe61hxau3N7vRU.png">
+<meta property="og:image" content="https://s2.loli.net/2024/09/02/JtZ4FvCTaM51LG6.png">
+<meta property="og:image" content="https://s2.loli.net/2024/09/02/eP3WyZRNMziFVkp.png">
+<meta property="og:image" content="https://s2.loli.net/2024/09/02/obB8YFh31InxMmf.png">
+<meta property="article:published_time" content="2024-08-27T09:08:21.000Z">
+<meta property="article:modified_time" content="2024-12-24T02:35:07.994Z">
+<meta property="article:author" content="linum">
+<meta property="article:tag" content="ROS">
+<meta property="article:tag" content="OpenSSL">
+<meta property="article:tag" content="SSL">
+<meta property="article:tag" content="证书链">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://s2.loli.net/2024/09/02/NE7PJtTXwmfVDj8.png">
+  
+  
+  
+  <title>ROS OpenSSL X509 证书链构建及自定义验证 - Linum Blog</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1749284_5i9bdhy70f8.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1736178_k526ubmyhba.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"blog.linum.top","root":"/","version":"1.9.8","typing":{"enable":true,"typeSpeed":50,"cursorChar":"|","loop":false,"scope":["home","page"]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Linum&#39;s Blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/backgroup.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle">ROS OpenSSL X509 证书链构建及自定义验证</span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2024-08-27 18:08" pubdate>
+          2024年8月27日 晚上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          6.5k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          55 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">ROS OpenSSL X509 证书链构建及自定义验证</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h1
+id="ros-openssl-x509-certificate-verification">ROS-OpenSSL-X509-Certificate-Verification</h1>
+<p>重庆大学国家卓越工程师学院-智能汽车软件-智能网联汽车信息安全-实验<br>
+<strong>✨✨✨实验环境✨✨✨：</strong><br> Windows 10 Linux
+Subsystem<br> BRANCH: vb_release<br> RELEASE: Ubuntu 20.04.3 LTS<br>
+KERNEL: Linux 5.10.16.3-microsoft-standard-WSL2<br> openssl
+版本：OpenSSL 1.1.1f 31 Mar 2020</p>
+<h1 id="创建证书链">1. 创建证书链</h1>
+<h2 id="创建根证书">1.1. 创建根证书</h2>
+<h3 id="创建根ca目录">1.1.1. 创建根CA目录</h3>
+<p>在自己定义的地方创建CA目录及根CA目录： <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-built_in">cd</span> &#123;自定义目录&#125;<br><span class="hljs-built_in">sudo</span> <span class="hljs-built_in">mkdir</span> -p ./ca_dir/root/key<br><span class="hljs-built_in">cd</span> ./ca_dir/root<br><span class="hljs-built_in">sudo</span> <span class="hljs-built_in">mkdir</span> newcerts<br><span class="hljs-built_in">sudo</span> <span class="hljs-built_in">touch</span> index.txt<br><span class="hljs-built_in">sudo</span> <span class="hljs-built_in">touch</span> index.txt.attr<br>su root<br><span class="hljs-comment"># 输入密码</span><br><span class="hljs-built_in">echo</span> 01 &gt; serial<br>su &#123;用户名&#125;<br></code></pre></td></tr></table></figure></p>
+<h3 id="创建配置文件">1.1.2. 创建配置文件</h3>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">vim openssl.cnf<br></code></pre></td></tr></table></figure>
+<p>按i进入编辑模式，粘贴以下配置(注意其中的 dir 要修改为自己的目录)
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br></pre></td><td class="code"><pre><code class="hljs ini"><span class="hljs-section">[ ca ]</span><br><span class="hljs-attr">default_ca</span>	= CA_default<br> <br><span class="hljs-section">[ CA_default ]</span><br><span class="hljs-attr">dir</span>		    = &#123;自定义目录&#125;/ca_dir/root/<br><span class="hljs-attr">certs</span>		= <span class="hljs-variable">$dir</span>/certs<br><span class="hljs-attr">crl_dir</span>		= <span class="hljs-variable">$dir</span>/crl<br><span class="hljs-attr">database</span>	= <span class="hljs-variable">$dir</span>/index.txt<br><span class="hljs-attr">new_certs_dir</span>	= <span class="hljs-variable">$dir</span>/newcerts<br><span class="hljs-attr">certificate</span>	= <span class="hljs-variable">$dir</span>/key/&#123;自定义根证书名&#125;.crt<br><span class="hljs-attr">serial</span>		= <span class="hljs-variable">$dir</span>/serial<br><span class="hljs-attr">crlnumber</span>	= <span class="hljs-variable">$dir</span>/crlnumber<br><span class="hljs-attr">crl</span>		    = <span class="hljs-variable">$dir</span>/crl.pem<br><span class="hljs-attr">private_key</span>	= <span class="hljs-variable">$dir</span>/key/&#123;自定义根私钥名&#125;.pem<br><span class="hljs-attr">RANDFILE</span>	= <span class="hljs-variable">$dir</span>/key/.rand<br><span class="hljs-attr">unique_subject</span>	= <span class="hljs-literal">no</span><br> <br><span class="hljs-attr">x509_extensions</span>	= usr_cert<br><span class="hljs-attr">copy_extensions</span> = copy<br> <br><span class="hljs-attr">name_opt</span> 	= ca_default<br><span class="hljs-attr">cert_opt</span> 	= ca_default<br> <br><span class="hljs-attr">default_days</span>	= <span class="hljs-number">365</span><br><span class="hljs-attr">default_crl_days</span>= <span class="hljs-number">30</span><br><span class="hljs-attr">default_md</span>	= sha256<br><span class="hljs-attr">preserve</span>	= <span class="hljs-literal">no</span><br><span class="hljs-attr">policy</span>		= policy_ca<br> <br><span class="hljs-section">[ policy_ca ]</span><br><span class="hljs-attr">countryName</span>		= supplied<br><span class="hljs-attr">stateOrProvinceName</span>	= supplied<br><span class="hljs-attr">organizationName</span>	= supplied<br><span class="hljs-attr">organizationalUnitName</span>	= supplied<br><span class="hljs-attr">commonName</span>		= supplied<br><span class="hljs-attr">emailAddress</span>		= optional<br> <br><span class="hljs-section">[ req ]</span><br><span class="hljs-attr">default_bits</span>		= <span class="hljs-number">2048</span><br><span class="hljs-attr">default_keyfile</span> 	= privkey.pem<br><span class="hljs-attr">distinguished_name</span>	= req_distinguished_name<br><span class="hljs-attr">attributes</span>		= req_attributes<br><span class="hljs-attr">x509_extensions</span>	= v3_ca<br><span class="hljs-attr">string_mask</span> = utf8only<br><span class="hljs-attr">utf8</span> = <span class="hljs-literal">yes</span><br><span class="hljs-attr">prompt</span>                  = <span class="hljs-literal">no</span><br> <br><span class="hljs-section">[ req_distinguished_name ]</span><br><span class="hljs-attr">countryName</span>			= CN<br><span class="hljs-attr">stateOrProvinceName</span>		= ChongQing<br><span class="hljs-attr">localityName</span>			= ChongQing<br><span class="hljs-attr">organizationName</span>        = CQU<br><span class="hljs-attr">organizationalUnitName</span>	= Root CA<br><span class="hljs-attr">commonName</span>			= cQU Root CA<br> <br><span class="hljs-section">[ usr_cert ]</span><br><span class="hljs-attr">basicConstraints</span> = CA:<span class="hljs-literal">TRUE</span><br> <br><span class="hljs-section">[ v3_ca ]</span><br><span class="hljs-attr">basicConstraints</span> = CA:<span class="hljs-literal">TRUE</span><br> <br><span class="hljs-section">[ req_attributes ]</span><br></code></pre></td></tr></table></figure> 编辑完成后按esc退出插入模式，按 :wq
+完成保存退出。<br />目前得到目录文件如下：<br /> <img
+src="https://s2.loli.net/2024/09/02/SvEhWFU9xtCIBHN.png" srcset="/img/loading.gif" lazyload /></p>
+<h3 id="创建根证书-1">1.1.3. 创建根证书</h3>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-comment"># 创建根私钥</span><br><span class="hljs-built_in">sudo</span> openssl genrsa -out ./key/root_private_key.pem 2048<br></code></pre></td></tr></table></figure>
+<p><img src="https://s2.loli.net/2024/09/02/NE7PJtTXwmfVDj8.png" srcset="/img/loading.gif" lazyload />
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-built_in">sudo</span> openssl req -new -key ./key/root_private_key.pem -out ./key/root.csr -config openssl.cnf<br></code></pre></td></tr></table></figure> <img
+src="https://s2.loli.net/2024/09/02/JviHfneQNSo8EKl.png" srcset="/img/loading.gif" lazyload />
+这里没有任何输出log <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-built_in">sudo</span> openssl ca -selfsign -<span class="hljs-keyword">in</span> ./key/root.csr -out ./key/root.crt -config openssl.cnf<br></code></pre></td></tr></table></figure>
+这里由于前面的配置文件中指定了根私钥的位置，所以没有通过 -key
+来指定私钥。<br> <img
+src="https://s2.loli.net/2024/09/02/irOSfxzcgewFB5H.png" srcset="/img/loading.gif" lazyload /><br>
+到这里就完成了根证书的自签名了，我们可以通过以下命令查看证书信息：
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">openssl x509 -text -<span class="hljs-keyword">in</span> ./key/root.crt<br></code></pre></td></tr></table></figure> <img
+src="https://s2.loli.net/2024/09/02/raOmNiMJz7lUSI8.png" srcset="/img/loading.gif" lazyload /><br>
+这样我们就得到了根CA证书，其可以用于签发二级代理CA，而不可用于签发服务器CA证书。<br>
+而当前的CA目录如下：<br> <img
+src="https://s2.loli.net/2024/09/02/VCXMdqa4c9LBrQb.png" srcset="/img/loading.gif" lazyload /><br> ps:
+这里作者是通过Visual Studio Code
+的远程连接插件连接的WSL，这样可以较为方便地管理文件及编写代码。</p>
+<h2 id="创建二级ca代理证书">1.2. 创建二级CA代理证书</h2>
+<h3 id="创建代理ca目录">1.2.1. 创建代理CA目录</h3>
+<p>这里首先如同创建根证书目录时类似： <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-built_in">cd</span> ..<br><span class="hljs-built_in">sudo</span> <span class="hljs-built_in">mkdir</span> agent<br><span class="hljs-built_in">cd</span> agent<br><span class="hljs-built_in">sudo</span> <span class="hljs-built_in">mkdir</span> key<br><span class="hljs-built_in">sudo</span> <span class="hljs-built_in">mkdir</span> newcerts<br><span class="hljs-built_in">sudo</span> <span class="hljs-built_in">touch</span> index.txt<br><span class="hljs-built_in">sudo</span> <span class="hljs-built_in">touch</span> index.txt.attr<br>su root<br><span class="hljs-comment"># 输入密码</span><br><span class="hljs-built_in">echo</span> 01 &gt; serial<br>su &#123;用户名&#125;<br></code></pre></td></tr></table></figure> 得到结构如下：<br>
+<img src="https://s2.loli.net/2024/09/02/jUwvPlg9cydFV4C.png" srcset="/img/loading.gif" lazyload /><br>
+注意agent和root目录是平级的。</p>
+<h3 id="创建代理ca配置文件">1.2.2. 创建代理CA配置文件</h3>
+<p>在agent目录中创建配置文件openssl.cnf <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">vim openssl.cnf<br></code></pre></td></tr></table></figure> <figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br></pre></td><td class="code"><pre><code class="hljs ini"><span class="hljs-section">[ ca ]</span><br><span class="hljs-attr">default_ca</span>	= CA_default<br> <br><span class="hljs-section">[ CA_default ]</span><br><span class="hljs-attr">dir</span>		    = &#123;自定义目录&#125;/ca_dir/agent/<br><span class="hljs-attr">certs</span>		= <span class="hljs-variable">$dir</span>/certs<br><span class="hljs-attr">crl_dir</span>		= <span class="hljs-variable">$dir</span>/crl<br><span class="hljs-attr">database</span>	= <span class="hljs-variable">$dir</span>/index.txt<br><span class="hljs-attr">new_certs_dir</span>	= <span class="hljs-variable">$dir</span>/newcerts<br><span class="hljs-attr">certificate</span>	= <span class="hljs-variable">$dir</span>/key/&#123;自定义代理CA证书文件名&#125;.crt<br><span class="hljs-attr">serial</span>		= <span class="hljs-variable">$dir</span>/serial<br><span class="hljs-attr">crlnumber</span>	= <span class="hljs-variable">$dir</span>/crlnumber<br><span class="hljs-attr">crl</span>		    = <span class="hljs-variable">$dir</span>/crl.pem<br><span class="hljs-attr">private_key</span>	= <span class="hljs-variable">$dir</span>/key/&#123;自定义代理CA私钥文件名&#125;.pem<br><span class="hljs-attr">RANDFILE</span>	= <span class="hljs-variable">$dir</span>/key/.rand<br><span class="hljs-attr">unique_subject</span>	= <span class="hljs-literal">no</span><br> <br><span class="hljs-attr">x509_extensions</span>	= usr_cert<br><span class="hljs-attr">copy_extensions</span> = copy<br> <br><span class="hljs-attr">name_opt</span> 	= ca_default<br><span class="hljs-attr">cert_opt</span> 	= ca_default<br> <br><span class="hljs-attr">default_days</span>	= <span class="hljs-number">365</span><br><span class="hljs-attr">default_crl_days</span>= <span class="hljs-number">30</span><br><span class="hljs-attr">default_md</span>	= sha256<br><span class="hljs-attr">preserve</span>	= <span class="hljs-literal">no</span><br><span class="hljs-attr">policy</span>		= policy_ca<br> <br><span class="hljs-section">[ policy_ca ]</span><br><span class="hljs-attr">countryName</span>		= supplied<br><span class="hljs-attr">stateOrProvinceName</span>	= supplied<br><span class="hljs-attr">organizationName</span>	= supplied<br><span class="hljs-attr">organizationalUnitName</span>	= supplied<br><span class="hljs-attr">commonName</span>		= supplied<br><span class="hljs-attr">emailAddress</span>		= optional<br> <br><span class="hljs-section">[ req ]</span><br><span class="hljs-attr">default_bits</span>		= <span class="hljs-number">2048</span><br><span class="hljs-attr">default_keyfile</span> 	= privkey.pem<br><span class="hljs-attr">distinguished_name</span>	= req_distinguished_name<br><span class="hljs-attr">attributes</span>		= req_attributes<br><span class="hljs-attr">x509_extensions</span>	= v3_ca<br><span class="hljs-attr">string_mask</span> = utf8only<br><span class="hljs-attr">utf8</span> = <span class="hljs-literal">yes</span><br><span class="hljs-attr">prompt</span> = <span class="hljs-literal">no</span><br> <br><span class="hljs-section">[ req_distinguished_name ]</span><br><span class="hljs-attr">countryName</span>			= CN<br><span class="hljs-attr">stateOrProvinceName</span>		= ChongQing<br><span class="hljs-attr">localityName</span>			= ChongQing<br><span class="hljs-attr">organizationName</span>        = CQU<br><span class="hljs-attr">organizationalUnitName</span>	= agent CA<br><span class="hljs-attr">commonName</span>			= CQU agent CA<br> <br><span class="hljs-section">[ usr_cert ]</span><br><span class="hljs-attr">basicConstraints</span> = CA:<span class="hljs-literal">FALSE</span><br> <br><span class="hljs-section">[ v3_ca ]</span><br><span class="hljs-attr">basicConstraints</span>        = CA:<span class="hljs-literal">TRUE</span><br> <br><span class="hljs-section">[ req_attributes ]</span><br></code></pre></td></tr></table></figure></p>
+<h3 id="创建二级代理ca证书">1.2.3. 创建二级代理CA证书</h3>
+<p>首先确定当前目录为 {自定义目录}/ca_dir/agent/ <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-comment"># 创建私钥</span><br><span class="hljs-built_in">sudo</span> openssl genrsa -out ./key/agent_private_key.pem 2048<br><span class="hljs-comment"># 创建签发请求</span><br><span class="hljs-built_in">sudo</span> openssl req -new -key ./key/agent_private_key.pem -out ./key/agent.csr -config openssl.cnf<br><span class="hljs-comment"># 使用根证书签发代理CA</span><br><span class="hljs-built_in">sudo</span> openssl ca -<span class="hljs-keyword">in</span> ./key/agent.csr -out ./key/agent.crt -config ../root/openssl.cnf<br></code></pre></td></tr></table></figure> <img
+src="https://s2.loli.net/2024/09/02/A8IQGTCMX47BpER.png" srcset="/img/loading.gif" lazyload /><br>
+注意这里使用的是根证书的配置文件，里面配置了根证书及其私钥的文件名等签名配置。<br>
+通过命令来查看证书内容： <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">openssl x509 -text -<span class="hljs-keyword">in</span> ./key/agent.crt<br></code></pre></td></tr></table></figure> <img
+src="https://s2.loli.net/2024/09/02/TqUWlYbo7yKB3VX.png" srcset="/img/loading.gif" lazyload /><br> 这里看到
+：<br> Issuer 内标注了 代理CA证书是由根证书签发的。<br> X509v3
+extensions 下有着 CA:TRUE 的标注，表明代理CA证书可以签发下一级证书。<br>
+但代理CA证书不能用于签发其他代理CA证书（在配置文件中已设置），而实际上的一些代理CA是可以继续签发的其他代理CA的。<br>
+这里也可以到root/index.txt 中查看到根证书已签发的证书： <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-built_in">cat</span> root/index.txt<br></code></pre></td></tr></table></figure>
+<img src="https://s2.loli.net/2024/09/02/dfe61hxau3N7vRU.png" srcset="/img/loading.gif" lazyload /></p>
+<h2 id="创建三级服务器证书">1.3. 创建三级服务器证书</h2>
+<h3 id="创建目录及配置文件">1.3.1. 创建目录及配置文件</h3>
+<p>首先创建目录并创建配置文件： <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-built_in">cd</span> &#123;自定义目录&#125;/ca_dir<br><span class="hljs-built_in">mkdir</span> seriver<br>vim openssl.cnf<br></code></pre></td></tr></table></figure> <figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><code class="hljs ini"><span class="hljs-section">[ req ]</span><br><span class="hljs-attr">prompt</span>             = <span class="hljs-literal">no</span><br><span class="hljs-attr">distinguished_name</span> = server_distinguished_name<br><span class="hljs-attr">req_extensions</span>     = req_ext<br><span class="hljs-attr">x509_extensions</span>	= v3_req<br><span class="hljs-attr">attributes</span>		= req_attributes<br> <br><span class="hljs-section">[ server_distinguished_name ]</span><br><span class="hljs-attr">commonName</span>              = CQU_seriver<br><span class="hljs-attr">stateOrProvinceName</span>     = ChongQing<br><span class="hljs-attr">countryName</span>             = CN<br><span class="hljs-attr">organizationName</span>        = CQU<br><span class="hljs-attr">organizationalUnitName</span>  = CQU IT seriver<br> <br><span class="hljs-section">[ v3_req ]</span><br><span class="hljs-attr">basicConstraints</span>        = CA:<span class="hljs-literal">FALSE</span><br><span class="hljs-attr">keyUsage</span> = nonRepudiation, digitalSignature, keyEncipherment<br> <br><span class="hljs-section">[ req_attributes ]</span><br> <br><span class="hljs-section">[ req_ext ]</span><br><span class="hljs-attr">subjectAltName</span>      = @alternate_names<br><br><span class="hljs-section">[ alternate_names ]</span><br><span class="hljs-attr">DNS.1</span>        = cqu.edu.cn<br></code></pre></td></tr></table></figure>
+这里服务器配置文件内则主要配置的是服务器的信息。</p>
+<h3 id="创建服务器证书并签名">1.3.2. 创建服务器证书并签名</h3>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-comment"># 创建私钥</span><br><span class="hljs-built_in">sudo</span> openssl genrsa -out ./seriver_private_key.pem 2048<br><span class="hljs-comment"># 创建前面请求</span><br><span class="hljs-built_in">sudo</span> openssl req -new -key ./seriver_private_key.pem -out ./seriver.csr -config openssl.cnf<br><span class="hljs-comment"># 使用代理CA来签发服务器证书</span><br><span class="hljs-built_in">sudo</span> openssl ca -<span class="hljs-keyword">in</span> ./seriver.csr -out ./seriver.crt -config ../agent/openssl.cnf<br></code></pre></td></tr></table></figure>
+<p><img src="https://s2.loli.net/2024/09/02/JtZ4FvCTaM51LG6.png" srcset="/img/loading.gif" lazyload /><br>
+这里可以直接看到log里面有 CA:FALSE，表明本证书不能进行签发。</p>
+<h1 id="代码实现证书链的构建发送及验证">2.
+代码实现证书链的构建、发送及验证</h1>
+<p>实验目标：<br>
+现在目前有节点A和节点B，其都保存并信任根证书。然后节点A需要构建一条证书链(服务器证书到根证书)，并将其发送给节点B。由于节点B信任根证书，所以可以将信任通过证书链传递到了服务器证书，从而验证了节点A的身份。在后续通讯中即可以通过服务器证书中的公钥进行加密，这时只有节点A拥有的私钥才可以解密(本文仅实现证书链的构建、发送即验证，不实现后续通讯)。<br>
+这里使用 ROS1、C++、OpenSSL 来实现。<br> 代码仓库：<br>
+github：https://github.com/linum-cqu/ROS-OpenSSL-X509-Certificate-Verification
+<br>
+gitee：https://gitee.com/forestwood/ROS-OpenSSL-X509-Certificate-Verification</p>
+<blockquote>
+<p>若读者对于C++基础语法不太熟悉，建议先学习一波。
+作者在学习使用OpenSSL时查阅到的中文教学资料较少，强烈推荐读者使用
+ChatGPT 来查阅本文中使用到OpenSSL相关方法。ps:
+本文中的部分代码为ChatGPT编写。</p>
+</blockquote>
+<p>这里附上相关网址：<br> ROS官网： <a
+target="_blank" rel="noopener" href="https://www.ros.org/">https://www.ros.org/</a><br> ROS官方文档：<a
+target="_blank" rel="noopener" href="http://wiki.ros.org/cn">http://wiki.ros.org/cn</a><br>
+OpenSSL官网：<a
+target="_blank" rel="noopener" href="https://www.openssl.org/">https://www.openssl.org/</a><br>
+OpenSSL中文手册：<a
+target="_blank" rel="noopener" href="https://www.openssl.net.cn/">https://www.openssl.net.cn/</a></p>
+<h2 id="ros说明">2.1. ROS说明</h2>
+<h3 id="消息订阅">2.1.1. 消息订阅</h3>
+<p>ROS 中的消息订阅模式：<br>
+在这里发布者(publisher)和订阅者(subscriber)首先分别向核心节点(master)进行注册，然后发布者和订阅者之间就会建立TCP连接。与常规TCP连接不同的是，消息的发送是单向的。这也就是设计模式中的发布订阅模式。<br>
+<img src="https://s2.loli.net/2024/09/02/eP3WyZRNMziFVkp.png" srcset="/img/loading.gif" lazyload /><br>
+具体的ROS的命令以及该如何进行开发，网上有许多可以轻易搜索到的资料，请读者自行学习。</p>
+<h3 id="自定义消息类型">2.1.2. 自定义消息类型</h3>
+<p>首先要在包目录下创建msg目录，并创建自定义消息格式文件如下：
+<figure class="highlight lasso"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs lasso"><span class="hljs-keyword">Header</span> <span class="hljs-keyword">header</span><br><span class="hljs-built_in">string</span> <span class="hljs-built_in">data</span><br><span class="hljs-built_in">string</span><span class="hljs-meta">[</span><span class="hljs-meta">]</span> certs<br></code></pre></td></tr></table></figure> header 为消息头文件，data 为主要传输数据，certs
+为证书链。</p>
+<h3 id="配置文件">2.1.3. 配置文件</h3>
+<p>首先注意要查找到对应依赖。 <figure class="highlight cmake"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs cmake"><span class="hljs-keyword">find_package</span>(catkin REQUIRED COMPONENTS<br>  roscpp<br>  std_msgs<br>  message_generation<br>)<br><span class="hljs-keyword">find_package</span>(OpenSSL REQUIRED)<br></code></pre></td></tr></table></figure>
+对于自定义消息也要添加消息文件，并生成消息。 <figure class="highlight cmake"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs cmake">add_message_files(<br>  FILES<br>  data.msg<br>)<br>generate_messages(<br>  DEPENDENCIES<br>  std_msgs<br>)<br></code></pre></td></tr></table></figure>
+然后指定catkin时的 include 目录及依赖。 <figure class="highlight cmake"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs cmake">catkin_package(<br> INCLUDE_DIRS <span class="hljs-keyword">include</span><br> LIBRARIES info_security<br> CATKIN_DEPENDS roscpp std_msgs message_runtime<br>)<br></code></pre></td></tr></table></figure> 指定项目 include
+目录。 <figure class="highlight cmake"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs cmake"><span class="hljs-keyword">include_directories</span>(<br>  <span class="hljs-keyword">include</span><br>  <span class="hljs-variable">$&#123;catkin_INCLUDE_DIRS&#125;</span><br>)<br></code></pre></td></tr></table></figure> 添加自定义的工具类并指定动态编译 <figure class="highlight cmake"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs cmake"><span class="hljs-keyword">add_library</span>(checker SHARED src/CertChecker.cpp)<br></code></pre></td></tr></table></figure>
+添加可执行文件及其依赖，注意这里要加上
+自定义工具类及OpenSSL，不然会出现找不到 XXX 方法。 <figure class="highlight cmake"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs cmake"><span class="hljs-keyword">add_executable</span>(pub src/pub.cpp)<br><span class="hljs-keyword">target_link_libraries</span>(pub <br>  checker<br>  OpenSSL::Crypto<br>  <span class="hljs-variable">$&#123;catkin_LIBRARIES&#125;</span><br>)<br><span class="hljs-keyword">add_dependencies</span>(pub <span class="hljs-variable">$&#123;PROJECT_NAME&#125;</span>_generate_messages_cpp) <br><br><span class="hljs-keyword">add_executable</span>(sub src/sub.cpp)<br><span class="hljs-keyword">target_link_libraries</span>(sub <br>  checker<br>  OpenSSL::Crypto<br>  <span class="hljs-variable">$&#123;catkin_LIBRARIES&#125;</span><br>)<br><span class="hljs-keyword">add_dependencies</span>(sub <span class="hljs-variable">$&#123;PROJECT_NAME&#125;</span>_generate_messages_cpp) <br></code></pre></td></tr></table></figure> 在
+package.xml 中同样要添加依赖标签如下： <figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-tag">&lt;<span class="hljs-name">depend</span>&gt;</span>roscpp<span class="hljs-tag">&lt;/<span class="hljs-name">depend</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">depend</span>&gt;</span>std_msgs<span class="hljs-tag">&lt;/<span class="hljs-name">depend</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">buildtool_depend</span>&gt;</span>catkin<span class="hljs-tag">&lt;/<span class="hljs-name">buildtool_depend</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">build_depend</span>&gt;</span>message_generation<span class="hljs-tag">&lt;/<span class="hljs-name">build_depend</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">exec_depend</span>&gt;</span>message_runtime<span class="hljs-tag">&lt;/<span class="hljs-name">exec_depend</span>&gt;</span><br></code></pre></td></tr></table></figure></p>
+<h2 id="openssl-说明">2.2. OpenSSL 说明</h2>
+<p>本文是使用 C++ 来使用 OpenSSL。<br />OpenSSL
+下有许多模块，本文主要使用的是 X509 证书模块，及一些辅助功能如
+bio、pem等IO模块。</p>
+<p>对于本文实验，在完成ROS工作空间及开发包创建以及 <a href="#ToGrH">1.
+创建证书链</a> 中的内容后， 需要完成的内容主要为：</p>
+<ol type="1">
+<li>从文件中读取出 X509 证书。</li>
+<li>构建证书链</li>
+<li>基于ROS发送并接收证书链</li>
+<li>验证证书</li>
+</ol>
+<p>以下为各内容所需要了解的 OpenSSL 知识。</p>
+<h3 id="证书读取相关">2.2.1. 证书读取相关</h3>
+<p>在 OpenSSL 中证书类为
+X509，但在实际使用中基本上都是使用其指针。所以在使用完后，需要清理防止内存泄露。
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-comment">// 一般使用的证书对象</span><br>X509* cert;<br><span class="hljs-comment">// 清理证书内存</span><br><span class="hljs-built_in">X509_free</span>(X509* cert);<br></code></pre></td></tr></table></figure> X509 证书的读取有许多种方式，本文中主要通过 BIO
+来读取文件，然后通过 PEM 来将 BIO 读取到的内容解析为 X509 证书。这里的
+PEM 其实也是 OpenSSL 常用的文件格式，其主要为基于 base64
+加密的数据和包裹数据的标题行。<br />主要使用的方法为：
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-comment">// 使用BIO读取文件</span><br><span class="hljs-comment">// const char* filename : 文件名(文件目录)</span><br><span class="hljs-comment">// const char* mode : 读取模式 (r 只读, w 只写, rw 读写)</span><br><span class="hljs-function">BIO* <span class="hljs-title">BIO_new_file</span><span class="hljs-params">(<span class="hljs-type">const</span> <span class="hljs-type">char</span>* filename, <span class="hljs-type">const</span> <span class="hljs-type">char</span>* mode)</span></span>;<br><br><span class="hljs-comment">// 通过PEM解析BIO</span><br><span class="hljs-comment">// BIO* bp : BIO对象指针</span><br><span class="hljs-comment">// X509** x : 解析出的X509证书指针保存地址，函数中会创建一个新的证书对象并将其指针写入到传入地址中。</span><br><span class="hljs-comment">// pem_password_cb* cb : 口令回调函数(本文未使用)</span><br><span class="hljs-comment">// void* u : 回调函数参数(本文未使用)</span><br><span class="hljs-function">X509* <span class="hljs-title">PEM_read_bio_X509</span><span class="hljs-params">(BIO* bp, X509** x, pem_password_cb* cb, <span class="hljs-type">void</span>* u)</span></span><br></code></pre></td></tr></table></figure></p>
+<h3 id="构建证书链相关">2.2.2. 构建证书链相关</h3>
+<p>在 OpenSSL 中的证书链保存格式为 <strong>X509 证书栈</strong>：
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-comment">// 证书链保存格式</span><br><span class="hljs-built_in">STACK_OF</span>(X509)* chain;<br><span class="hljs-comment">// 证书链添加证书入栈</span><br><span class="hljs-comment">// STACK_OF(X509)* chain : 证书链指针</span><br><span class="hljs-comment">// X509* cert : X509 证书指针</span><br><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">sk_X509_push</span><span class="hljs-params">(STACK_OF(X509)* chain, X509* cert)</span></span>;<br><span class="hljs-comment">// 证书链删除栈顶证书</span><br><span class="hljs-comment">// STACK_OF(X509)* chain : 证书链指针</span><br><span class="hljs-function">X509* <span class="hljs-title">sk_X509_pop</span><span class="hljs-params">(STACK_OF(X509)* chain)</span></span>;<br></code></pre></td></tr></table></figure> 这里可以看到主要是使用了栈来保存
+X509对象，然后通过使用栈对象的指针来操作证书链。<br />如果只是构建一条证书链的话，可以直接使用上述push和pop方法，但其并不能保证证书链有效。<br />如果我们需要构建一条<strong>可信证书链</strong>，首先我们需要确保首先证书链是有效的，其次证书链必须可以链接到一个可信证书。所以本文中使用<strong>证书上下文</strong>来验证并生成证书链。而要使用上下文，则需要了解一些其相关知识。<br />首先上下文中需要大量使用到<strong>可信证书库(Trusted
+X509 Store)</strong>或<strong>可信证书链(Trusted
+Chain)</strong>这两个都是帮助上下文判断证书是否可信的根本，两个选择一个使用即可，本文中使用了可信证书库。然后则是<strong>吊销证书列表(Certificate
+Revocation List, CRL)</strong>，常规的证书验证都是需要 CRL
+检查的，以排除证书链中已吊销的证书，但其需要联网并且本次实验为本地自建证书链，所以需要将其禁用。相对于信任证书链对于证书验证而言，还有<strong>非可信证书链(Untrusted
+Chain)</strong>。我们在构建证书链时，可能有一部分中间证书是非信任的，但其又作为证书链的一部分不可或缺，所以我们可以将其完整添加到非可信证书链中用于辅助构建可信证书链。
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-comment">// 可信证书库</span><br>X509_STORE* store;<br><span class="hljs-comment">// 证书上下文及其创建</span><br>X509_STORE_CTX* ctx = <span class="hljs-built_in">X509_STORE_CTX_new</span>();<br><span class="hljs-comment">// 证书上下文初始化</span><br><span class="hljs-comment">// X509_STORE_CTX* ctx : 证书上下文指针</span><br><span class="hljs-comment">// X509_STORE* store : 可信证书库</span><br><span class="hljs-comment">// X509* x509 : 待验证证书</span><br><span class="hljs-comment">// STACK_OF(X509)* untrusted_chain : 非可信证书链</span><br><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">X509_STORE_CTX_init</span><span class="hljs-params">(X509_STORE_CTX* ctx, X509_STORE* store, X509* x509, STACK_OF(X509)* untrusted_chain)</span></span>;<br><span class="hljs-comment">// 禁用 CRL 检查 (直接使用即可，这里就不解释了)</span><br><span class="hljs-built_in">X509_STORE_set_flags</span>(store, X509_V_FLAG_ALLOW_PROXY_CERTS | X509_V_FLAG_IGNORE_CRITICAL);<br><span class="hljs-comment">// 证书验证</span><br><span class="hljs-comment">// 返回1表示验证通过，其他表示未通过</span><br><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">X509_verify_cert</span><span class="hljs-params">(X509_STORE_CTX* ctx)</span></span>;<br><span class="hljs-comment">// 获取构建的可信证书链 </span><br><span class="hljs-built_in">STACK_OF</span>(X509)* <span class="hljs-built_in">X509_STORE_CTX_get1_chain</span>(X509_STORE_CTX *ctx);<br><span class="hljs-comment">// 清理上下文(清空配置)</span><br><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">X509_STORE_CTX_cleanup</span><span class="hljs-params">(X509_STORE_CTX *ctx)</span></span><br><span class="hljs-function"><span class="hljs-comment">// 释放上下文(释放内存)</span></span><br><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">X509_STORE_CTX_free</span><span class="hljs-params">(X509_STORE_CTX *ctx)</span></span><br></code></pre></td></tr></table></figure></p>
+<h3 id="发送及接收上下文相关">2.2.3. 发送及接收上下文相关</h3>
+<p>对于X509对象而言，我们需要将其转化为一个常用的消息格式，作者这里为了方便选择直接使用字符串
+std::string
+来保存X509对象。而对于证书链，刚好ROS支持可变长度数组(vector)，所以这里就直接使用字符串数组来发送了。<br />然后我们的工作就变成了
+X509 的序列化和反序列化，作者这里直接使用了 ChatGPT
+来编写下列代码，所以就不多解释啦。 <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-function">std::string <span class="hljs-title">x509_to_string</span><span class="hljs-params">(X509 *cert)</span> </span>&#123;<br>    std::string cert_str;<br>    BIO *bio = <span class="hljs-built_in">BIO_new</span>(<span class="hljs-built_in">BIO_s_mem</span>());<br>    <span class="hljs-keyword">if</span> (<span class="hljs-built_in">PEM_write_bio_X509</span>(bio, cert)) &#123;<br>        <span class="hljs-type">char</span> *cert_data;<br>        <span class="hljs-type">long</span> cert_size = <span class="hljs-built_in">BIO_get_mem_data</span>(bio, &amp;cert_data);<br>        cert_str.<span class="hljs-built_in">assign</span>(cert_data, cert_size);<br>    &#125;<br>    <span class="hljs-built_in">BIO_free</span>(bio);<br>    <span class="hljs-keyword">return</span> cert_str;<br>&#125;<br><br><span class="hljs-function">X509* <span class="hljs-title">string_to_x509</span><span class="hljs-params">(<span class="hljs-type">const</span> std::string&amp; cert_str)</span> </span>&#123;<br>    BIO* cert_bio = <span class="hljs-built_in">BIO_new_mem_buf</span>(cert_str.<span class="hljs-built_in">data</span>(), cert_str.<span class="hljs-built_in">size</span>());<br>    <span class="hljs-keyword">if</span> (cert_bio == <span class="hljs-literal">nullptr</span>) &#123;<br>        <span class="hljs-keyword">return</span> <span class="hljs-literal">nullptr</span>;<br>    &#125;<br>    X509* cert = <span class="hljs-built_in">PEM_read_bio_X509</span>(cert_bio, <span class="hljs-literal">nullptr</span>, <span class="hljs-literal">nullptr</span>, <span class="hljs-literal">nullptr</span>);<br>    <span class="hljs-built_in">BIO_free</span>(cert_bio);<br>    <span class="hljs-keyword">return</span> cert;<br>&#125;<br></code></pre></td></tr></table></figure></p>
+<h3 id="验证证书相关">2.2.4. 验证证书相关</h3>
+<p>在 <a href="#DicWq">2.2.2. 构建证书链相关</a>
+中以及提到了关键的证书验证方法 X509_verify_cert
+，但这个方法的默认验证函数是由 OpenSSL
+封装的，我们并不清楚内部实现的验证逻辑。<br> 不过大致上可以描述为：<br>
+在签发证书时 CA 会根据证书内的信息 通过某个 hash 算法得到其 hash
+值，然后用自己的私钥对其进行加密，从而得到了数字签名。<br>
+在验证证书时，我们通过证书内的签发者信息，去查找到签发者的证书，进而获取到其公钥之后使用公钥对数字签名进行解密得到
+hash值 h1，同样对待验证证书内的信息通过同样的 hash 算法计算得到 hash 值
+h2 ，然后对比 h1 和 h2 即可知道证书有无被串改。<br> OpenSSL
+还是提供了自定义验证逻辑的回调函数配置方法： <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-comment">// 配置自定义的验证逻辑回调函数</span><br><span class="hljs-comment">// X509_STORE_CTX *ctx : 证书上下文</span><br><span class="hljs-comment">// X509_STORE_CTX_verify_cb verify : 自定义的证书验证函数</span><br><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">X509_STORE_CTX_set_verify_cb</span><span class="hljs-params">(X509_STORE_CTX* ctx, X509_STORE_CTX_verify_cb verify)</span></span>;<br><br><span class="hljs-comment">// 自定义证书验证函数</span><br><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">verifyCallback</span><span class="hljs-params">(<span class="hljs-type">int</span> ok, X509_STORE_CTX* ctx)</span> </span>&#123;<br>    <span class="hljs-comment">// 自定义验证逻辑</span><br>    <span class="hljs-comment">// 返回值为1表示验证成功，0表示验证失败</span><br>&#125;<br><br><span class="hljs-comment">// 获取当前验证证书</span><br><span class="hljs-function">X509* <span class="hljs-title">X509_STORE_CTX_get_current_cert</span><span class="hljs-params">(X509_STORE_CTX* ctx)</span></span>;<br><span class="hljs-comment">// 获取证书信息</span><br><span class="hljs-function">X509_NAME* <span class="hljs-title">X509_get_subject_name</span><span class="hljs-params">(<span class="hljs-type">const</span> X509* a)</span></span><br><span class="hljs-function"><span class="hljs-comment">// 获取错误层数</span></span><br><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">X509_STORE_CTX_get_error_depth</span><span class="hljs-params">(X509_STORE_CTX* ctx)</span></span><br><span class="hljs-function"><span class="hljs-comment">// 获取错误</span></span><br><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">X509_STORE_CTX_get_error</span><span class="hljs-params">(X509_STORE_CTX *ctx)</span></span><br><span class="hljs-function"><span class="hljs-comment">// 将错误编号转为字符串</span></span><br><span class="hljs-function"><span class="hljs-type">const</span> <span class="hljs-type">char</span>* <span class="hljs-title">X509_verify_cert_error_string</span><span class="hljs-params">(<span class="hljs-type">long</span> n)</span></span><br></code></pre></td></tr></table></figure></p>
+<h2 id="代码讲解">2.3. 代码讲解</h2>
+<p>首先先附上本次实验的文件目录结构：<br> <img
+src="https://s2.loli.net/2024/09/02/eY4jFUySdwOVXt7.png" srcset="/img/loading.gif" lazyload /><br>
+大致讲解一下 info_securty 目录下的主要文件或目录的作用：</p>
+<ul>
+<li>ca_dir ：证书目录</li>
+<li>CertChecker.h CertChecker.cpp ：为方便使用 OpenSSL
+建立的工具类的头文件及源文件</li>
+<li>Const.h ：定义了证书目录及路径常量 (读者要复现的话需要修改路径)</li>
+<li>data.msg ：ROS 的自定义消息格式文件</li>
+<li>pub.cpp sub.cpp ：发布者和订阅者，里面创建了相应节点并使用了
+CertChecker ，这里包含主要的实验流程。</li>
+<li>CMakeLists.txt ：CMake 的配置文件，这里包含编译的配置。</li>
+<li>package.xml ：包的说明配置文件，这里主要为 ROS 包的配置，需要与
+CMakeLists.txt 保持一致。</li>
+</ul>
+<p>其他文件或目录为 ROS
+工作空间配置文件及编译后产生的相关文件，不需要在意。</p>
+<h3 id="certchecker">2.3.1. CertChecker</h3>
+<p>CertChecker 是用于方便管理和调用 OpenSSL
+的自定义工具类(以下简称<strong>检查者</strong>)，里面包括三个静态方法及四个成员方法。之所以要创建单独工具类有以下原因：</p>
+<ol type="1">
+<li>封装部分方法，提升代码可读性、可维护性。</li>
+<li>便于统一进行资源的创建、初始化、回收。</li>
+<li>降低代码耦合。</li>
+</ol>
+<p>检查者头文件及源文件如下： &gt;
+这里需要注意的是，在初始化中已默认读取了根证书并添加到可信证书库。 &gt;
+其余代码已有足够多注释，相信读者结合上文可以自行理解。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-meta">#<span class="hljs-keyword">pragma</span> once</span><br><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&quot;info_security/Const.h&quot;</span></span><br><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;openssl/bio.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;openssl/pem.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;openssl/x509.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;openssl/x509_vfy.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;openssl/err.h&gt;</span></span><br><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">CertChecker</span> &#123;<br>    <span class="hljs-keyword">private</span>:<br>        <span class="hljs-comment">// 可信证书库</span><br>        X509_STORE* store;<br>        <span class="hljs-comment">// 可信证书链</span><br>        <span class="hljs-built_in">STACK_OF</span>(X509)* trusted_chain;<br>        <span class="hljs-comment">// 非可信证书链</span><br>        <span class="hljs-built_in">STACK_OF</span>(X509)* untrusted_chain;<br>        <span class="hljs-comment">// 构建的证书链</span><br>        <span class="hljs-built_in">STACK_OF</span>(X509)* build_chain;<br>        <br>    <span class="hljs-keyword">public</span>:<br>        <span class="hljs-comment">// 无参构造</span><br>        <span class="hljs-built_in">CertChecker</span>();<br>        <span class="hljs-comment">// 析构函数</span><br>        ~<span class="hljs-built_in">CertChecker</span>();<br>        <span class="hljs-comment">// 从文件中读取证书</span><br>        <span class="hljs-function"><span class="hljs-type">static</span> X509* <span class="hljs-title">getCert</span><span class="hljs-params">(std::string certPath)</span></span>;<br>        <span class="hljs-comment">// 将 X509 证书转化为字符串</span><br>        <span class="hljs-function"><span class="hljs-type">static</span> std::string <span class="hljs-title">x509_to_string</span><span class="hljs-params">(X509 *cert)</span></span>;<br>        <span class="hljs-comment">// 从字符串中解析出 X509 证书</span><br>        <span class="hljs-function"><span class="hljs-type">static</span> X509* <span class="hljs-title">string_to_x509</span><span class="hljs-params">(<span class="hljs-type">const</span> std::string&amp; cert_str)</span></span>;<br>        <span class="hljs-comment">// 添加进入可信证书库</span><br>        <span class="hljs-function"><span class="hljs-type">bool</span> <span class="hljs-title">addToStore</span><span class="hljs-params">(X509* cert)</span></span>;<br>        <span class="hljs-comment">// 添加进入证书链 trust: 是否可信</span><br>        <span class="hljs-function"><span class="hljs-type">bool</span> <span class="hljs-title">addToChain</span><span class="hljs-params">(X509* cert,<span class="hljs-type">bool</span> trust)</span></span>;<br>        <span class="hljs-comment">// 校验证书</span><br>        <span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">verifyCert</span><span class="hljs-params">(X509* cert)</span></span>;<br>        <span class="hljs-comment">// 校验证书并构建证书链</span><br>        <span class="hljs-built_in">STACK_OF</span>(X509)* <span class="hljs-built_in">buildCertChain</span>(X509* cert);<br>&#125;;<br></code></pre></td></tr></table></figure>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&quot;info_security/CertChecker.h&quot;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;iostream&gt;</span></span><br><br>CertChecker::<span class="hljs-built_in">CertChecker</span>(<span class="hljs-comment">/* args */</span>)<br>&#123;<br>    store = <span class="hljs-built_in">X509_STORE_new</span>();<br>    <span class="hljs-comment">// 设置默认证书目录 </span><br>    <span class="hljs-built_in">X509_STORE_set_default_paths</span>(store);<br>    trusted_chain = <span class="hljs-built_in">sk_X509_new_null</span>();<br>    untrusted_chain = <span class="hljs-built_in">sk_X509_new_null</span>();<br>    build_chain = <span class="hljs-built_in">sk_X509_new_null</span>();<br><br>    <span class="hljs-comment">// 加载受信任的证书(根证书)</span><br>    std::string rootPath = CA_DIR_ROOT + <span class="hljs-string">&quot;key/root.crt&quot;</span>;<br>    X509* root = CertChecker::<span class="hljs-built_in">getCert</span>(rootPath);<br>    <span class="hljs-keyword">this</span>-&gt;<span class="hljs-built_in">addToStore</span>(root);<br>    <span class="hljs-keyword">this</span>-&gt;<span class="hljs-built_in">addToChain</span>(root,<span class="hljs-literal">true</span>);<br>&#125;<br><br>CertChecker::~<span class="hljs-built_in">CertChecker</span>()<br>&#123;<br>    <span class="hljs-comment">// 释放资源</span><br>    <span class="hljs-built_in">X509_STORE_free</span>(store); <br>    <span class="hljs-built_in">sk_X509_free</span>(trusted_chain);<br>    <span class="hljs-built_in">sk_X509_free</span>(untrusted_chain);<br>    <span class="hljs-built_in">sk_X509_free</span>(build_chain);<br>&#125;<br><span class="hljs-function">X509* <span class="hljs-title">CertChecker::getCert</span><span class="hljs-params">(std::string certPath)</span> </span>&#123;<br>    <span class="hljs-comment">// 创建 BIO 对象，用于读取文件</span><br>    BIO* bio = <span class="hljs-built_in">BIO_new_file</span>(certPath.<span class="hljs-built_in">c_str</span>(), <span class="hljs-string">&quot;r&quot;</span>);<br>    <span class="hljs-keyword">if</span>(bio == <span class="hljs-literal">NULL</span>) &#123;<br>        std::cout &lt;&lt; <span class="hljs-string">&quot;读取文件出错&quot;</span> &lt;&lt; std::endl;<br>    &#125;<br>    X509* cert = <span class="hljs-literal">nullptr</span>; <br>    <span class="hljs-built_in">PEM_read_bio_X509</span>(bio, &amp;cert, <span class="hljs-literal">nullptr</span>, <span class="hljs-literal">nullptr</span>);<br>    <span class="hljs-keyword">if</span>(!cert) &#123;<br>        std::cout &lt;&lt; <span class="hljs-string">&quot;解析文件出错&quot;</span> &lt;&lt; std::endl;<br>    &#125;<br>    <span class="hljs-comment">// 关闭 BIO 对象</span><br>    <span class="hljs-built_in">BIO_free</span>(bio);<br>    <span class="hljs-keyword">return</span> cert;<br>&#125;<br><br><span class="hljs-function"><span class="hljs-type">bool</span> <span class="hljs-title">CertChecker::addToChain</span><span class="hljs-params">(X509* cert,<span class="hljs-type">bool</span> trust)</span> </span>&#123;<br>    <span class="hljs-keyword">if</span>(cert == <span class="hljs-literal">nullptr</span>) &#123;<br>        <span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>;<br>    &#125;<br>    <span class="hljs-comment">// 入栈</span><br>    <span class="hljs-keyword">if</span>(trust) &#123;<br>        <span class="hljs-built_in">sk_X509_push</span>(trusted_chain, cert);<br>    &#125;<br>    <span class="hljs-keyword">else</span> &#123;<br>        <span class="hljs-built_in">sk_X509_push</span>(untrusted_chain, cert);<br>    &#125;<br>    <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>;<br>&#125;<br><br><span class="hljs-function"><span class="hljs-type">bool</span> <span class="hljs-title">CertChecker::addToStore</span><span class="hljs-params">(X509* cert)</span> </span>&#123;<br>    <span class="hljs-comment">// 将证书添加到 X509_STORE 中</span><br>    <span class="hljs-keyword">if</span> (<span class="hljs-built_in">X509_STORE_add_cert</span>(store, cert) != <span class="hljs-number">1</span>) &#123;<br>        <span class="hljs-comment">// 错误处理</span><br>        <span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>;<br>    &#125;<br>    <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>;<br>&#125;<br><br><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">verifyCallback</span><span class="hljs-params">(<span class="hljs-type">int</span> ok, X509_STORE_CTX *ctx)</span></span><br><span class="hljs-function"></span>&#123;<br>    <span class="hljs-comment">// 自定义验证逻辑</span><br>    <span class="hljs-comment">// 返回值为1表示验证成功，0表示验证失败</span><br>    X509* cert = <span class="hljs-built_in">X509_STORE_CTX_get_current_cert</span>(ctx);<br>    <span class="hljs-type">char</span> buf[<span class="hljs-number">256</span>];<br>    <span class="hljs-built_in">X509_NAME_oneline</span>(<span class="hljs-built_in">X509_get_subject_name</span>(cert), buf, <span class="hljs-number">256</span>);<br>    std::cout &lt;&lt; <span class="hljs-string">&quot;正在验证：&quot;</span> &lt;&lt; buf &lt;&lt; std::endl;<br>    <br>    <span class="hljs-keyword">if</span> (!ok) &#123;<br>        <span class="hljs-comment">// 验证失败，打印错误信息</span><br>        <span class="hljs-type">int</span> depth = <span class="hljs-built_in">X509_STORE_CTX_get_error_depth</span>(ctx);<br>        <span class="hljs-type">int</span> err = <span class="hljs-built_in">X509_STORE_CTX_get_error</span>(ctx);<br>        <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;Error at depth %d: %s\n&quot;</span>, depth, buf);<br>        <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;  Error code %d (%s)\n&quot;</span>, err, <span class="hljs-built_in">X509_verify_cert_error_string</span>(err));<br>        <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>    &#125;<br>    std::cout &lt;&lt; <span class="hljs-string">&quot;验证通过&quot;</span> &lt;&lt; std::endl;<br>    <span class="hljs-keyword">return</span> ok;<br>&#125;<br><br><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">CertChecker::verifyCert</span><span class="hljs-params">(X509* cert)</span></span><br><span class="hljs-function"></span>&#123;<br>    <span class="hljs-comment">// 初始化上下文</span><br>    X509_STORE_CTX *ctx = <span class="hljs-built_in">X509_STORE_CTX_new</span>();<br>    <span class="hljs-keyword">if</span>(ctx == <span class="hljs-literal">nullptr</span>) &#123;<br>        std::cout &lt;&lt; <span class="hljs-string">&quot;初始化失败&quot;</span> &lt;&lt; std::endl;<br>    &#125;<br><br>    <span class="hljs-comment">// 参数说明 (ctx, store, 待验证证书, 非信任的待验证证书链)</span><br>    <span class="hljs-keyword">if</span>(!<span class="hljs-built_in">X509_STORE_CTX_init</span>(ctx, store, cert, untrusted_chain)) &#123;<br>        std::cout &lt;&lt; <span class="hljs-string">&quot;初始化上下文失败&quot;</span> &lt;&lt; std::endl;<br>    &#125;<br>    <span class="hljs-comment">// 设置自定义验证回调函数</span><br>    <span class="hljs-comment">// X509_STORE_CTX_set_verify_cb(ctx, verifyCallback);</span><br>    <span class="hljs-comment">// 禁用 CRL 检查</span><br>    <span class="hljs-built_in">X509_STORE_set_flags</span>(store, X509_V_FLAG_ALLOW_PROXY_CERTS | X509_V_FLAG_IGNORE_CRITICAL);<br>    <span class="hljs-comment">// 设置可信证书链</span><br>    <span class="hljs-comment">// X509_STORE_CTX_trusted_stack(ctx, trusted_chain);</span><br>    <span class="hljs-comment">// 验证证书链的可信性</span><br>    <span class="hljs-type">int</span> result = <span class="hljs-built_in">X509_verify_cert</span>(ctx);<br>    <span class="hljs-comment">// int result = X509_verify(server_cert, store);</span><br>    <span class="hljs-keyword">if</span>(result != <span class="hljs-number">1</span>) &#123;<br>        <span class="hljs-type">int</span> err = <span class="hljs-built_in">X509_STORE_CTX_get_error</span>(ctx);<br>        std::cout &lt;&lt; <span class="hljs-built_in">X509_verify_cert_error_string</span>(err) &lt;&lt; std::endl;<br>    &#125;<br>    <span class="hljs-built_in">X509_STORE_CTX_free</span>(ctx);<br>    <span class="hljs-keyword">return</span> result;<br>&#125;<br><br><span class="hljs-comment">// 构建证书链</span><br><span class="hljs-built_in">STACK_OF</span>(X509)* CertChecker::<span class="hljs-built_in">buildCertChain</span>(X509* cert) &#123;<br>    build_chain = <span class="hljs-built_in">sk_X509_new_null</span>();<br><br>    <span class="hljs-comment">// 创建一个验证器并设置一些参数</span><br>    X509_STORE_CTX* ctx = <span class="hljs-built_in">X509_STORE_CTX_new</span>();<br>    <span class="hljs-keyword">if</span> (!ctx) &#123;<br>        <span class="hljs-comment">// 处理错误</span><br>        <span class="hljs-keyword">return</span> <span class="hljs-literal">NULL</span>;<br>    &#125;<br>    <span class="hljs-comment">// 禁用 CRL 检查</span><br>    <span class="hljs-built_in">X509_STORE_set_flags</span>(store, X509_V_FLAG_ALLOW_PROXY_CERTS | X509_V_FLAG_IGNORE_CRITICAL);<br>    <span class="hljs-comment">// 初始化上下文</span><br>    <span class="hljs-keyword">if</span> (!<span class="hljs-built_in">X509_STORE_CTX_init</span>(ctx, store, cert, untrusted_chain)) &#123;<br>        <span class="hljs-comment">// 处理错误</span><br>        <span class="hljs-keyword">return</span> <span class="hljs-literal">NULL</span>;<br>    &#125;<br>    <span class="hljs-comment">// 设置自定义验证回调函数</span><br>    <span class="hljs-built_in">X509_STORE_CTX_set_verify_cb</span>(ctx, verifyCallback);<br>    <span class="hljs-comment">// X509_STORE_CTX_trusted_stack(ctx, trusted_chain);</span><br>    <span class="hljs-type">int</span> ret = <span class="hljs-built_in">X509_verify_cert</span>(ctx);<br>    <span class="hljs-keyword">if</span> (ret != <span class="hljs-number">1</span>) &#123;<br>        <span class="hljs-comment">// 验证失败，处理错误</span><br>        <span class="hljs-type">int</span> err = <span class="hljs-built_in">X509_STORE_CTX_get_error</span>(ctx);<br>        <span class="hljs-comment">// 处理错误码</span><br>        <span class="hljs-keyword">return</span> <span class="hljs-literal">NULL</span>;<br>    &#125;<br>    <span class="hljs-comment">// 生成证书链并获取</span><br>    build_chain = <span class="hljs-built_in">X509_STORE_CTX_get1_chain</span>(ctx);<br>    <span class="hljs-built_in">X509_STORE_CTX_cleanup</span>(ctx);<br>    <span class="hljs-built_in">X509_STORE_CTX_free</span>(ctx);<br>    <span class="hljs-keyword">return</span> build_chain;<br>&#125;<br><br><span class="hljs-function">std::string <span class="hljs-title">CertChecker::x509_to_string</span><span class="hljs-params">(X509 *cert)</span> </span>&#123;<br>    std::string cert_str;<br>    BIO *bio = <span class="hljs-built_in">BIO_new</span>(<span class="hljs-built_in">BIO_s_mem</span>());<br>    <span class="hljs-keyword">if</span> (<span class="hljs-built_in">PEM_write_bio_X509</span>(bio, cert)) &#123;<br>        <span class="hljs-type">char</span> *cert_data;<br>        <span class="hljs-type">long</span> cert_size = <span class="hljs-built_in">BIO_get_mem_data</span>(bio, &amp;cert_data);<br>        cert_str.<span class="hljs-built_in">assign</span>(cert_data, cert_size);<br>    &#125;<br>    <span class="hljs-built_in">BIO_free</span>(bio);<br>    <span class="hljs-keyword">return</span> cert_str;<br>&#125;<br><br><span class="hljs-function">X509* <span class="hljs-title">CertChecker::string_to_x509</span><span class="hljs-params">(<span class="hljs-type">const</span> std::string&amp; cert_str)</span> </span>&#123;<br>    BIO* cert_bio = <span class="hljs-built_in">BIO_new_mem_buf</span>(cert_str.<span class="hljs-built_in">data</span>(), cert_str.<span class="hljs-built_in">size</span>());<br>    <span class="hljs-keyword">if</span> (cert_bio == <span class="hljs-literal">nullptr</span>) &#123;<br>        <span class="hljs-keyword">return</span> <span class="hljs-literal">nullptr</span>;<br>    &#125;<br>    X509* cert = <span class="hljs-built_in">PEM_read_bio_X509</span>(cert_bio, <span class="hljs-literal">nullptr</span>, <span class="hljs-literal">nullptr</span>, <span class="hljs-literal">nullptr</span>);<br>    <span class="hljs-built_in">BIO_free</span>(cert_bio);<br>    <span class="hljs-keyword">return</span> cert;<br>&#125;<br></code></pre></td></tr></table></figure>
+<h3 id="发布者">2.3.2. 发布者</h3>
+<p>发布者内首先可以看到声明了检查者指针并赋值为空指针，然后则是一个自定义的退出处理函数，在此函数内进行内存回收、打印日志及退出。<br />在主函数内，可以看到首先创建并配置了发布者节点，然后创建证书检查者对象，之后就开始拼接证书路径并开始调用
+getCert 方法从文件中读取代理CA证书及服务器证书。我们这里通过
+addToChain(agent, false) 将代理CA证书添加到非信任证书链中。然后调用
+buildCertChain 方法构建证书链。然后将证书链转为字符串数组并最终添加到
+自定义消息 msg.certs 内。最后在循环内，将消息发送出去。
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&quot;ros/ros.h&quot;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;signal.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;sstream&gt;</span></span><br><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&quot;info_security/data.h&quot;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&quot;info_security/CertChecker.h&quot;</span></span><br><br><span class="hljs-comment">// 声明证书检查者</span><br>CertChecker* certChecker = <span class="hljs-literal">nullptr</span>;<br><br><span class="hljs-comment">// 自定义的 Ctrl + C 退出 handler</span><br><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">MySigintHandler</span><span class="hljs-params">(<span class="hljs-type">int</span> sig)</span></span><br><span class="hljs-function"></span>&#123;<br>	<span class="hljs-comment">//这里主要进行退出前的数据保存、内存清理、告知其他节点等工作</span><br>    <span class="hljs-keyword">if</span>(certChecker != <span class="hljs-literal">nullptr</span>) &#123;<br>        <span class="hljs-keyword">delete</span> certChecker;<br>    &#125;<br>	<span class="hljs-built_in">ROS_INFO</span>(<span class="hljs-string">&quot;shutting down!&quot;</span>);<br>	ros::<span class="hljs-built_in">shutdown</span>();<br>    <span class="hljs-built_in">exit</span>(<span class="hljs-number">0</span>);<br>&#125;<br><br><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">main</span><span class="hljs-params">(<span class="hljs-type">int</span> argc, <span class="hljs-type">char</span> *argv[])</span></span><br><span class="hljs-function"></span>&#123;<br>    <span class="hljs-comment">// 中文显示</span><br>    <span class="hljs-built_in">setlocale</span>(LC_ALL,<span class="hljs-string">&quot;&quot;</span>);<br>    <span class="hljs-comment">// 初始化节点</span><br>    ros::<span class="hljs-built_in">init</span>(argc,argv,<span class="hljs-string">&quot;publisher&quot;</span>,ros::init_options::NoSigintHandler);<br>    <span class="hljs-comment">// 配置自定义退出 Handler</span><br>    <span class="hljs-built_in">signal</span>(SIGINT, MySigintHandler);<br>    <span class="hljs-comment">// 创建句柄</span><br>    ros::NodeHandle nh;<br>    <span class="hljs-comment">// 创建发布者</span><br>    ros::Publisher pub = nh.<span class="hljs-built_in">advertise</span>&lt;info_security::data&gt;(<span class="hljs-string">&quot;fang&quot;</span>,<span class="hljs-number">10</span>);<br>    <span class="hljs-comment">// 设置发布频率(Hz) 这里是0.5 所以是两秒一次</span><br>    <span class="hljs-function">ros::Rate <span class="hljs-title">rate</span><span class="hljs-params">(<span class="hljs-number">0.5</span>)</span></span>;<br><br>    <span class="hljs-comment">// 创建要发布的消息</span><br>    info_security::data msg;<br><br>    <span class="hljs-comment">// 创建证书检查者</span><br>    certChecker = <span class="hljs-keyword">new</span> <span class="hljs-built_in">CertChecker</span>();<br><br>    <span class="hljs-comment">// 从文件中读取代理证书并添加到非信任证书链</span><br>    std::string agentPath = CA_DIR_AGENT + <span class="hljs-string">&quot;key/agent.crt&quot;</span>;<br>    X509* agent = CertChecker::<span class="hljs-built_in">getCert</span>(agentPath);<br>    certChecker-&gt;<span class="hljs-built_in">addToChain</span>(agent,<span class="hljs-literal">false</span>);<br><br>    <span class="hljs-comment">// 从文件中读取服务器证书</span><br>    std::string servicePath = CA_DIR_SERIVER + <span class="hljs-string">&quot;seriver.crt&quot;</span>;<br>    X509* service = CertChecker::<span class="hljs-built_in">getCert</span>(servicePath);<br><br>    <span class="hljs-comment">// 构建服务器验证的证书链</span><br>    <span class="hljs-built_in">STACK_OF</span>(X509)* chain = certChecker-&gt;<span class="hljs-built_in">buildCertChain</span>(service);<br>    <span class="hljs-keyword">if</span> (chain != <span class="hljs-literal">NULL</span>) &#123;<br>        <span class="hljs-built_in">ROS_INFO</span>(<span class="hljs-string">&quot;证书验证通过&quot;</span>);<br>    &#125; <span class="hljs-keyword">else</span> &#123;<br>        <span class="hljs-built_in">ROS_ERROR</span>(<span class="hljs-string">&quot;证书验证失败&quot;</span>);<br>        <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>    &#125;<br><br>    <span class="hljs-comment">// 将证书链解析进去字符串数组 certs</span><br>    <span class="hljs-type">int</span> length = <span class="hljs-built_in">sk_X509_num</span>(chain);<br>    std::cout &lt;&lt; <span class="hljs-string">&quot;证书链长:&quot;</span> &lt;&lt; length &lt;&lt; std::endl;<br>    std::string certs[length]; <br>    <span class="hljs-keyword">for</span>(<span class="hljs-type">int</span> i=<span class="hljs-number">0</span>;i&lt;length;i++) &#123;<br>        X509* tempCert = <span class="hljs-built_in">sk_X509_value</span>(chain,i);<br>        certs[i] = CertChecker::<span class="hljs-built_in">x509_to_string</span>(tempCert);<br>        std::cout &lt;&lt; certs[i] &lt;&lt; std::endl;<br>    &#125;<br><br>    <span class="hljs-comment">// 正式发送消息都循环</span><br>    <span class="hljs-type">int</span> count = <span class="hljs-number">0</span>;<br>    <span class="hljs-keyword">while</span>(ros::ok)<br>    &#123;<br>        count++;<br>        std::stringstream ss;<br>        ss &lt;&lt; <span class="hljs-string">&quot;当前是第&quot;</span> &lt;&lt; count &lt;&lt; <span class="hljs-string">&quot;条消息!&quot;</span>;<br><br>        <span class="hljs-comment">// 组装消息</span><br>        msg.header.seq = count;<br>        msg.header.stamp = ros::Time::<span class="hljs-built_in">now</span>();<br>        msg.header.frame_id = <span class="hljs-string">&quot;cert&quot;</span>;<br>        msg.data = ss.<span class="hljs-built_in">str</span>();<br>        msg.certs.<span class="hljs-built_in">clear</span>();<br>        <span class="hljs-keyword">for</span>(std::string cert:certs) &#123;<br>            msg.certs.<span class="hljs-built_in">push_back</span>(cert);<br>        &#125;<br>        <span class="hljs-comment">// 发布消息</span><br>        pub.<span class="hljs-built_in">publish</span>(msg);<br>        <span class="hljs-comment">// 打印 log</span><br>        <span class="hljs-built_in">ROS_INFO</span>(<span class="hljs-string">&quot;%s&quot;</span>,ss.<span class="hljs-built_in">str</span>().<span class="hljs-built_in">c_str</span>());<br>        <span class="hljs-comment">// 休眠指定时间</span><br>        rate.<span class="hljs-built_in">sleep</span>();<br>        ros::<span class="hljs-built_in">spinOnce</span>();<br>    &#125;<br>    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br></code></pre></td></tr></table></figure></p>
+<h3 id="订阅者">2.3.3. 订阅者</h3>
+<p>在订阅者中同样声明了一个检查者、定义了退出处理函数。在主函数中也是主要定义节点，不同的是这里有一个消息处理回调函数，即订阅者在接收到消息后就会调用这个函数进行处理。在消息处理回调函数中，这里首先打印一些日志，然后将消息中的字符串重新解析为证书并添加到非信任证书链，这里我们保存下第一个证书即服务器证书的指针。然后调用
+verifyCert 对证书进行校验。 <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&quot;ros/ros.h&quot;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;signal.h&gt;</span></span><br><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&quot;info_security/data.h&quot;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&quot;info_security/CertChecker.h&quot;</span></span><br><br><span class="hljs-comment">// 创建证书检查者</span><br>CertChecker* certChecker = <span class="hljs-literal">nullptr</span>;<br><br><span class="hljs-comment">// 自定义的 Ctrl + C 退出 handler</span><br><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">MySigintHandler</span><span class="hljs-params">(<span class="hljs-type">int</span> sig)</span></span><br><span class="hljs-function"></span>&#123;<br>	<span class="hljs-comment">//这里主要进行退出前的数据保存、内存清理、告知其他节点等工作</span><br>    <span class="hljs-keyword">if</span>(certChecker != <span class="hljs-literal">nullptr</span>) &#123;<br>        <span class="hljs-keyword">delete</span> certChecker;<br>    &#125;<br>	<span class="hljs-built_in">ROS_INFO</span>(<span class="hljs-string">&quot;shutting down!&quot;</span>);<br>	ros::<span class="hljs-built_in">shutdown</span>();<br>&#125;<br><br><span class="hljs-comment">// 消息处理回调函数</span><br><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">doMsg</span><span class="hljs-params">(<span class="hljs-type">const</span> info_security::dataConstPtr &amp;msg)</span></span><br><span class="hljs-function"></span>&#123;<br>    <span class="hljs-comment">// 打印 log</span><br>    <span class="hljs-built_in">ROS_INFO</span>(<span class="hljs-string">&quot;订阅：%s&quot;</span>,msg-&gt;data.<span class="hljs-built_in">c_str</span>());<br>    <span class="hljs-comment">// 使用 cert 保存服务器证书</span><br>    X509* cert = <span class="hljs-literal">nullptr</span>;<br>    <span class="hljs-comment">// 获取证书链长度</span><br>    <span class="hljs-type">int</span> cert_count = msg-&gt;certs.<span class="hljs-built_in">size</span>();<br>    <span class="hljs-comment">// 遍历证书字符串</span><br>    <span class="hljs-keyword">for</span>(std::string certString:msg-&gt;certs) &#123;<br>        <span class="hljs-comment">// 将字符串重新解析为 X509 证书</span><br>        X509* temp = CertChecker::<span class="hljs-built_in">string_to_x509</span>(certString);<br>        <span class="hljs-keyword">if</span>(temp == <span class="hljs-literal">nullptr</span>) &#123;<br>            <span class="hljs-built_in">ROS_ERROR</span>(<span class="hljs-string">&quot;解析失败&quot;</span>);<br>            <span class="hljs-keyword">break</span>;<br>        &#125;<br>        <span class="hljs-comment">// 使用 cert 接收服务器证书</span><br>        <span class="hljs-keyword">if</span>(cert == <span class="hljs-literal">nullptr</span>) &#123;<br>            cert = temp;<br>        &#125;<br>        <span class="hljs-comment">// 将 证书添加到 非信任证书链</span><br>        certChecker-&gt;<span class="hljs-built_in">addToChain</span>(temp,<span class="hljs-literal">false</span>);<br>        <span class="hljs-comment">// 打印 解析文件消息</span><br>        <span class="hljs-type">char</span> buf[<span class="hljs-number">256</span>];<br>        <span class="hljs-built_in">X509_NAME_oneline</span>(<span class="hljs-built_in">X509_get_subject_name</span>(temp), buf, <span class="hljs-number">256</span>);<br>        std::cout &lt;&lt; <span class="hljs-string">&quot;已解析：&quot;</span> &lt;&lt; buf &lt;&lt; std::endl;<br>    &#125;<br>    <span class="hljs-comment">// 验证证书</span><br>    <span class="hljs-type">int</span> res = certChecker-&gt;<span class="hljs-built_in">verifyCert</span>(cert);<br>    <span class="hljs-keyword">if</span> (res == <span class="hljs-number">1</span>) &#123;<br>        <span class="hljs-built_in">ROS_INFO</span>(<span class="hljs-string">&quot;证书验证通过&quot;</span>);<br>    &#125; <span class="hljs-keyword">else</span> &#123;<br>        <span class="hljs-built_in">ROS_ERROR</span>(<span class="hljs-string">&quot;证书验证失败&quot;</span>);<br>    &#125;<br>&#125;<br><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">main</span><span class="hljs-params">(<span class="hljs-type">int</span> argc, <span class="hljs-type">char</span> *argv[])</span></span><br><span class="hljs-function"></span>&#123;<br>    <span class="hljs-comment">// 中文显示</span><br>    <span class="hljs-built_in">setlocale</span>(LC_ALL,<span class="hljs-string">&quot;&quot;</span>);<br>    <span class="hljs-comment">// 初始化节点</span><br>    ros::<span class="hljs-built_in">init</span>(argc,argv,<span class="hljs-string">&quot;subscriber&quot;</span>,ros::init_options::NoSigintHandler);<br>    <span class="hljs-comment">// 配置自定义退出 Handler</span><br>    <span class="hljs-built_in">signal</span>(SIGINT, MySigintHandler);<br><br>    <span class="hljs-comment">// 创建句柄</span><br>    ros::NodeHandle nh;<br>    <span class="hljs-comment">// 创建订阅者</span><br>    ros::Subscriber sub = nh.<span class="hljs-built_in">subscribe</span>(<span class="hljs-string">&quot;fang&quot;</span>,<span class="hljs-number">10</span>,doMsg);<br>    <span class="hljs-comment">// 创建证书检查者</span><br>    certChecker = <span class="hljs-keyword">new</span> <span class="hljs-built_in">CertChecker</span>();<br>    <span class="hljs-comment">// 进入循环接收消息</span><br>    ros::<span class="hljs-built_in">spin</span>();<br>    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br></code></pre></td></tr></table></figure></p>
+<h3 id="额外说明">2.3.4. 额外说明</h3>
+<ol type="1">
+<li>非信任证书链可以包含待验证证书及一些可信证书</li>
+<li>如果代码中通过使用 setlocale(LC_ALL,"")
+来使得输出显示中文，这样的前提条件是当前环境中已经有中文语言包。如果读者在复现时出现中文显示异常(
+??? 或 其他乱码)，可以参照 <a target="_blank" rel="noopener" href="http://t.csdn.cn/TvdQ3">Ubuntu
+安装中文支持</a>。</li>
+<li>发布者和订阅者的自定义退出处理函数略有不同，在发布者中多调用了
+exit(0) ，这是因为两者的循环方式不同。</li>
+<li>本文中没有真正实现自定义证书验证，仅提供了模板及日志便于查看学习。</li>
+</ol>
+<h1 id="运行测试">3. 运行测试</h1>
+<p>启动一个终端，进入ROS工作空间目录</p>
+<ol type="1">
+<li>source 一下本地目录下的ros目录内的 setup.bash</li>
+<li>编译项目</li>
+<li>启动核心节点 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-built_in">source</span> /opt/ros/noetic/setup.bash <br>catkin_make<br>roscore<br></code></pre></td></tr></table></figure> <img
+src="https://s2.loli.net/2024/09/02/8mHybWPI1uFkMeK.png" srcset="/img/loading.gif" lazyload /><br> <img
+src="https://s2.loli.net/2024/09/02/c4bpHehMxWQqwPV.png" srcset="/img/loading.gif" lazyload /><br> <img
+src="https://s2.loli.net/2024/09/02/8AVa6zvXNlU3CdM.png" srcset="/img/loading.gif" lazyload /><br>
+再启动一个终端，进入工作空间，这时里面已经编译出了 devel
+目录，那么就可以直接 source 该目录下的
+setup.bash。然后即可启动发布者节点 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-built_in">source</span> devel/setup.bash<br>rosrun info_security pub<br></code></pre></td></tr></table></figure> <img
+src="https://s2.loli.net/2024/09/02/yJW6oGg7nu5vfqM.png" srcset="/img/loading.gif" lazyload /><br> <img
+src="https://s2.loli.net/2024/09/02/n4kytKeHlFEmLuQ.png" srcset="/img/loading.gif" lazyload /><br>
+这里可以看到进行了证书的逐级验证，输入验证通过后，这里会将加密后的证书链打印出来。然后就开始发送消息了。<br>
+注意这里作者为了截图，所以退出程序了。而读者可以不关闭发布者进行后续操作。</li>
+</ol>
+<p>再启动一个终端，和发布者大致相同，启动订阅者节点。 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-built_in">source</span> devel/setup.bash<br>rosrun info_security sub<br></code></pre></td></tr></table></figure>
+<img src="https://s2.loli.net/2024/09/02/obB8YFh31InxMmf.png" srcset="/img/loading.gif" lazyload /><br>
+这里可以看到依次解析各个证书后，验证通过。 &gt;
+这里说明一下，在发布者中设置了自定义校验来打印日志，所以发布时其实并没有真正进行校验。而在订阅者内，使用的是OpenSSL
+默认的校验函数，所以实际进行了校验而并没有打印日志。</p>
+<h1 id="写在最后">4. 写在最后</h1>
+<p>本人经验尚浅，如本文有任何错误或改进之处欢迎各位留言！😉<br>
+如果觉得不错的话，可以<strong>✨</strong>一下吗？</p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/ROS/" class="category-chain-item">ROS</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/ROS/" class="print-no-link">#ROS</a>
+      
+        <a href="/tags/OpenSSL/" class="print-no-link">#OpenSSL</a>
+      
+        <a href="/tags/SSL/" class="print-no-link">#SSL</a>
+      
+        <a href="/tags/%E8%AF%81%E4%B9%A6%E9%93%BE/" class="print-no-link">#证书链</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>ROS OpenSSL X509 证书链构建及自定义验证</div>
+      <div>https://blog.linum.top/2024/08/27/ROS-OpenSSL-X509-证书链构建及自定义验证/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>linum</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2024年8月27日</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>更新于</div>
+          <div>2024年12月24日</div>
+        </div>
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-cc-by"></i>
+                  </span>
+                </a>
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="NC - 非商业性使用">
+                    <i class="iconfont icon-cc-nc"></i>
+                  </span>
+                </a>
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="SA - 相同方式共享">
+                    <i class="iconfont icon-cc-sa"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2024/08/27/ROS-OpenSSL-SSL%E8%BF%9E%E6%8E%A5%E5%BB%BA%E7%AB%8B/" title="ROS OpenSSL SSL连接建立">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">ROS OpenSSL SSL连接建立</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2024/08/27/%E8%BD%A6%E8%BE%86%E5%9D%90%E6%A0%87%E8%BD%AC%E6%8D%A2/" title="车辆坐标转换">
+                        <span class="hidden-mobile">车辆坐标转换</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/5.0.0/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

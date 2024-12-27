@@ -1,0 +1,1013 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="linum">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="1. 设计原则介绍 在大学时期，笔者就系统地学习了各种设计模式，也一直希望能够在编码时使用起来，写出简洁优雅的代码。 然而，在实际工作中总是无法将实际问题和设计模式联系起来，从而实际很少用得上。 如果说设计模式是对于一个常见问题总结出来的优秀模板，那么设计原则就是对于优秀代码准则的高度抽象。 掌握了设计原则，我们不仅能更好地理解各个设计模式为什么这么做，还可以指导我们在一些新的场景下总结出新的设计">
+<meta property="og:type" content="article">
+<meta property="og:title" content="设计模式-1-六大设计原则">
+<meta property="og:url" content="https://blog.linum.top/2024/09/13/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-1-%E5%85%AD%E5%A4%A7%E8%AE%BE%E8%AE%A1%E5%8E%9F%E5%88%99/index.html">
+<meta property="og:site_name" content="Linum Blog">
+<meta property="og:description" content="1. 设计原则介绍 在大学时期，笔者就系统地学习了各种设计模式，也一直希望能够在编码时使用起来，写出简洁优雅的代码。 然而，在实际工作中总是无法将实际问题和设计模式联系起来，从而实际很少用得上。 如果说设计模式是对于一个常见问题总结出来的优秀模板，那么设计原则就是对于优秀代码准则的高度抽象。 掌握了设计原则，我们不仅能更好地理解各个设计模式为什么这么做，还可以指导我们在一些新的场景下总结出新的设计">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2024-09-13T10:19:09.000Z">
+<meta property="article:modified_time" content="2024-12-06T02:16:52.734Z">
+<meta property="article:author" content="linum">
+<meta property="article:tag" content="设计模式">
+<meta property="article:tag" content="设计原则">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+  
+  <title>设计模式-1-六大设计原则 - Linum Blog</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1749284_5i9bdhy70f8.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1736178_k526ubmyhba.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"blog.linum.top","root":"/","version":"1.9.8","typing":{"enable":true,"typeSpeed":50,"cursorChar":"|","loop":false,"scope":["home","page"]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Linum&#39;s Blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/backgroup.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle">设计模式-1-六大设计原则</span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2024-09-13 19:19" pubdate>
+          2024年9月13日 晚上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          3.8k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          32 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">设计模式-1-六大设计原则</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h1 id="设计原则介绍">1. 设计原则介绍</h1>
+<p>在大学时期，笔者就系统地学习了各种设计模式，也一直希望能够在编码时使用起来，写出简洁优雅的代码。<br>
+然而，在实际工作中总是无法将实际问题和设计模式联系起来，从而实际很少用得上。</p>
+<p>如果说设计模式是对于一个常见问题总结出来的优秀模板，那么设计原则就是对于优秀代码准则的高度抽象。<br>
+掌握了设计原则，我们不仅能更好地理解各个设计模式为什么这么做，还可以指导我们在一些新的场景下总结出新的设计模式。</p>
+<h1 id="设计原则定义">2. 设计原则定义</h1>
+<h2 id="单一职责原则">2.1. 单一职责原则</h2>
+<p><strong>单一职责原则要求一个模块应该有且仅有一个职责，否则模块需要被拆分。</strong>
+<br> 单一职责原则(Single Responsibility Principle,
+SRP)中的职责也可以简单理解为模块的功能。<br>
+原则指出，一个模块应该聚焦在一个功能领域，避免承担多个职责。</p>
+<h3 id="示例">2.1.1. 示例</h3>
+<pre><code class=" mermaid">classDiagram
+    class People &#123;
+        + String role
+        + void goSchool()
+    &#125;
+</code></pre>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">class</span> <span class="hljs-title class_">People</span> &#123;<br>    String role;<br>    <span class="hljs-keyword">void</span> <span class="hljs-title function_">goSchool</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-keyword">if</span> (<span class="hljs-string">&quot;stuent&quot;</span>.equals(role)) &#123;<br>            <span class="hljs-comment">// 学习</span><br>            doStudy();<br>        &#125; <span class="hljs-keyword">else</span> &#123;<br>            <span class="hljs-comment">// 上班</span><br>            doWork();<br>        &#125;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>People类同时包含了学习和上班的逻辑，这里就是承担了多个职责。因此可以拆分如下：</p>
+<pre><code class=" mermaid">classDiagram
+    direction LR
+    class People &#123;
+        + String role
+    &#125;
+    class Student &#123;
+        + void doStudy()
+    &#125;
+    class Teacher &#123;
+        + void doWork()
+    &#125;
+    People &lt;|-- Student
+    People &lt;|-- Teacher
+</code></pre>
+<h3 id="解决的问题">2.1.2. 解决的问题</h3>
+<p>多职责实现有以下三点问题：</p>
+<ul>
+<li>模块修改频繁。职责通常是我们去修改代码实现的原因，过多的职责会使得我们频繁修改整个模块。</li>
+<li>复杂度上升。模块中单个职责的实现，会使得模块的复杂度上升。多个职责混合在一个模块中会使得模块的复杂度指数上升。</li>
+<li>可维护性下降。调用方在引用模块时，会引入无关的功能实现。模块升级时，调用方就需要去额外关注一些无关的修改，增加了维护成本。</li>
+</ul>
+<h3 id="原则分析">2.1.3. 原则分析</h3>
+<p>单一职责的核心思想是控制模块的细粒度。这样将有以下优点：</p>
+<ul>
+<li>显著降低模块复杂度。一个模块负责一项职责，不仅会降低模块内复杂度，也会降低模块间调用的复杂度。</li>
+<li>提升可维护性。降低了单个功能的修改对其他功能的影响。调用方也降低了模块的升级频率。</li>
+<li>提升可读性。单一的职责使得模块的命名可以更加准确，从而见名知意。</li>
+</ul>
+<p>单一职责原则是简单的，然而实际运用时非常考验开发人员的分析和抽象能力。<br>
+开发人员需要理解功能模块的核心功能，并将不同职责拆分出来，封装为独立的新模块中。与此同时，模块功能的细粒度也是需要结合项目实际情况把控的，过细地拆分往往伴随着设计和开发的工作量上升。</p>
+<h2 id="接口隔离原则">2.2. 接口隔离原则</h2>
+<p><strong>接口隔离原则要求客户端不应该依赖于无关的接口，接口应该尽量小而专注。</strong><br>
+接口隔离原则(Interface Segregation Principle,
+ISP)强调的是建立模块之间依赖的接口应该最小化，做到精简专一。</p>
+<h3 id="示例-1">2.2.1. 示例</h3>
+<pre><code class=" mermaid">classDiagram
+    direction LR
+    class GoSchool &#123;
+        &lt;&lt;interface&gt;&gt;
+        void doStudy()
+        void doWork()
+    &#125;
+
+    class People &#123;
+        + String role
+        + void doStudy()
+        + void doWork()
+    &#125;
+
+People ..|&gt; GoSchool
+</code></pre>
+<p>GoSchool 接口中包含了两个方法，根据角色不同，People
+其实只需要实现一个方法，所以另一个方法是无用的。将接口可以拆分如下：</p>
+<pre><code class=" mermaid">classDiagram
+    direction LR
+    class DoStudy &#123;
+        &lt;&lt;interface&gt;&gt;
+        void doStudy()
+    &#125;
+
+    class DoWork &#123;
+        &lt;&lt;interface&gt;&gt;
+        void doWork()
+    &#125;
+
+    class People &#123;
+        + String role
+    &#125;
+
+    class Student &#123;
+        + void doStudy()
+    &#125;
+    class Teacher &#123;
+        + void doWork()
+    &#125;
+    People &lt;|-- Student
+    People &lt;|-- Teacher
+
+    Student ..|&gt; DoStudy
+    Teacher ..|&gt; DoWork
+</code></pre>
+<h3 id="解决的问题-1">2.2.2. 解决的问题</h3>
+<p>大而全的接口通常伴随着如下问题：</p>
+<ul>
+<li>实现代码冗余：当一个接口包含多个方法时，任何实现该接口的类都必须实现所有这些方法，即使它们并不需要。</li>
+<li>降低灵活性：接口的变化可能会影响所有实现该接口的类，导致频繁的修改和回归测试，增加了维护成本。</li>
+<li>增加耦合度：实现类被迫依赖于大型接口中的所有方法，导致类之间的耦合度上升，降低了系统的灵活性和可扩展性。</li>
+<li>可读性差：大型接口往往包含多个不相关的方法，使得实现类的可读性降低，增加了理解和使用的难度。</li>
+</ul>
+<h3 id="原则分析-1">2.2.3. 原则分析</h3>
+<p>接口隔离原则的核心思想是将接口设计得更加精简和专注，这样将带来以下优点：</p>
+<ul>
+<li>降低耦合度：小而专用的接口使得实现类只需关注其需要的方法，减少了对其他不相关功能的依赖。</li>
+<li>提高灵活性：接口的变化只影响相关的实现类，其他类不会受到影响，从而降低了修改的风险。</li>
+<li>提升可维护性：接口依赖关系更加纯粹，对于功能的划分也更加清晰。</li>
+<li>增强可读性：小接口使得每个接口的功能更加明确，增强了代码的可读性和可理解性。</li>
+<li>支持扩展：新的功能可以通过新增小接口实现，而不是修改已有的大接口。</li>
+</ul>
+<h2 id="开闭原则">2.3. 开闭原则</h2>
+<p><strong>开闭原则要求模块实现对于扩展开放且对于修改封闭</strong> <br>
+开放封闭原则(Open Closed Principle, OCP)具体拆分为两部分：</p>
+<ul>
+<li>对扩展开放，即对于新需求可以对已有模块进行横向扩展，以适应新情况。</li>
+<li>对修改封闭，即已完成的模块具有独立稳定的功能实现，不需要继续任何代码修改。</li>
+</ul>
+<h3 id="示例-2">2.3.1. 示例</h3>
+<pre><code class=" mermaid">classDiagram
+    direction LR
+
+    class Computer &#123;
+        + Keyboard keyboard
+    &#125;
+
+    namespace USB &#123;
+        class Keyboard &#123;
+            + typingWithUsb() void
+        &#125;
+    &#125;
+
+    namespace Bluetooth &#123;
+        class KeyBoard &#123;
+            + typingWithBluetooth() void
+        &#125;
+    &#125;
+
+    Computer ..&gt; Keyboard
+    Computer ..&gt; KeyBoard
+</code></pre>
+<p>Computer 依赖于 Keyboard，但是 Keyboard 早期大部分是使用 USB
+连接的，后期变更为了使用 Bluetooth连接。此时就需要修改 KeyBoard 已有的
+USB 实现。<br> 为实现开闭原则，可以进行如下修改：</p>
+<pre><code class=" mermaid">classDiagram
+    direction LR
+
+    class Computer &#123;
+        + Keyboard keyboard
+    &#125;
+
+    class Keyboard &#123;
+        &lt;&lt;abstract&gt;&gt;
+        + typing() void*
+    &#125;
+
+    Computer ..&gt; Keyboard
+
+    class KeyboardUsb &#123;
+        + typing() void
+    &#125;
+
+    class KeyBoardBluetooth &#123;
+        + typing() void
+    &#125;
+
+    Keyboard &lt;|-- KeyboardUsb
+    Keyboard &lt;|-- KeyBoardBluetooth
+</code></pre>
+<h3 id="解决的问题-2">2.3.2. 解决的问题</h3>
+<p>“这个世界是频繁变化的”、“需求并非一成不变”。<br>
+实际的软件开发工作中，需求总是变化的，可软件功能实现是相对静态的。每当需求变化，原有的软件功能就无法满足，因此时常需要修改代码实现。然而频繁对已有代码实现进行修改，对于开发者而言是地狱般的体验，并且这往往导致模块质量的下降和复杂度的上升。</p>
+<h3 id="原则分析-2">2.3.3. 原则分析</h3>
+<p>开闭原则的核心思想是依赖抽象、封装变化。<br>
+通过让模块依赖于稳定的抽象，而不是具体的实现，将相对稳定的核心功能逻辑固化。通过新增抽象的不同实现，实现模块的功能扩展，满足新需求。</p>
+<p>开闭原则可以带来如下好处：</p>
+<ul>
+<li>显著提升扩展性：通过新增新的抽象实现即可扩展模块的功能。</li>
+<li>提升可维护性：扩展功能不需要修改已有代码，不同扩展功能之间代码独立。</li>
+<li>降低复杂度：每个抽象实现仅需要关注自身的功能实现。</li>
+</ul>
+<p>开闭原则实现首要需要考虑的是提取出相对稳定的抽象。这就要求开发者区分出代码中不变和变化的部分，并提取出其中变化部分的稳定特征，从而设计出抽象约束。这一点是主要的难点：如果抽象程度不足，那么每个实现中都包含大量重复的实现；如果抽象程度过深，则较难使得抽象相对稳定，无法适应后续变化。</p>
+<h2 id="里氏替换原则">2.4. 里氏替换原则</h2>
+<p><strong>里氏替换原则要求所有引用基类的地方都能使用子类替换</strong><br>
+里氏替换原则(Liskov Substitution Principle,
+LSP)是实现开闭原则的方式之一。原则仅允许子类对于基类进行扩展，具体而言：</p>
+<ul>
+<li>子类可以实现基类的抽象方法，尽量不重写基类的非抽象方法。</li>
+<li>子类重写基类的非抽象方法时，应该保障原有功能逻辑，然后进行扩展。</li>
+</ul>
+<h3 id="示例-3">2.4.1. 示例</h3>
+<pre><code class=" mermaid">classDiagram
+    direction LR
+    class Bird &#123;
+        +fly() void
+    &#125;
+    class Penguin &#123;
+        +fly() void
+        +swim() void
+    &#125;
+    Bird &lt;|-- Penguin
+</code></pre>
+<p>企鹅属于鸟类，但是企鹅却不会飞。因此如果 Penguin 继承
+Bird，就需要修改 fly() 方法。这就违反了里氏替换原则。<br></p>
+<pre><code class=" mermaid">classDiagram
+    direction LR
+    class Bird &#123;
+        &lt;&lt;abstract&gt;&gt;
+        +action()*
+    &#125;
+    class FlyingBird &#123;
+        +action() fly
+    &#125;
+    class Penguin &#123;
+        +action() swim
+    &#125;
+    FlyingBird --|&gt; Bird
+    Bird &lt;|--Penguin
+</code></pre>
+<p>Bird 类有一个抽象方法 action()，FlyingBird 类实现了这个方法来飞，而
+Penguin 类也实现了这个方法来游泳。</p>
+<h3 id="解决的问题-3">2.4.2. 解决的问题</h3>
+<p>如果子类无法覆盖基类的功能，这会至少带来一下问题：</p>
+<ul>
+<li>增加多态出错概率：子类与基类方法功能会产生不一致。这种不一致是隐性的，在多态运用时，非常容易产生预期之外的结果。</li>
+<li>降低整体可复用性：子类无法复用基类原本的方法。</li>
+</ul>
+<h3 id="原则分析-3">2.4.3. 原则分析</h3>
+<p>里氏替换原则的核心思想是严格的继承复用。若不满足该原则，则说明模块之间的关系的最优解不是继承，因为继承的重点在于子类复用基类。</p>
+<p>在不满足里氏替换原则时，有以下调整思路：</p>
+<ul>
+<li>两个模块可能存在一个更具泛性的基类。</li>
+<li>模块关系可以用组合或聚合来代替继承关系。</li>
+</ul>
+<h2 id="依赖倒置原则">2.5. 依赖倒置原则</h2>
+<p><strong>依赖倒置原则要求模块依赖于抽象而不是具体实现</strong><br>
+依赖倒置原则(Dependence Inversion Principle,
+DIP)也是实现开闭原则的方式之一。原则要求：</p>
+<ul>
+<li>高层模块不要应该依赖于低层模块，两者都应该依赖于抽象。</li>
+<li>抽象不应该依赖于具体实现，而具体实现应该依赖于抽象。</li>
+</ul>
+<h3 id="示例-4">2.5.1. 示例</h3>
+<pre><code class=" mermaid">classDiagram
+    direction LR
+    class Application &#123;
+        +saveData(String) void
+    &#125;
+    class Database &#123;
+        +connect() boolean
+        +save(String) void
+    &#125;
+    Application ..&gt; Database
+</code></pre>
+<p>在这个类图中，Application 类直接使用 Database
+类，违反了依赖倒置原则，因为 Application 依赖于一个具体的实现。<br>
+为了遵循依赖倒置原则，我们可以引入一个抽象层，比如 IDataRepository
+接口，让 Application 类依赖于这个抽象，而不是具体的 Database 类。</p>
+<pre><code class=" mermaid">classDiagram
+    direction LR
+    class Application &#123;
+        +saveData(String) void
+    &#125;
+    class IDataRepository &#123;
+        &lt;&lt;interface&gt;&gt;
+        +save(String) void
+    &#125;
+    class Database &#123;
+        +connect() boolean
+        +save(String) void
+    &#125;
+    Application ..&gt; IDataRepository
+    IDataRepository &lt;|.. Database
+</code></pre>
+<h3 id="解决的问题-4">2.5.2. 解决的问题</h3>
+<p>在软件设计中，模块间的相互依赖通常是让整个系统设计僵化、脆弱和难以复用的罪魁祸首。<br>
+这种僵化体现在任意一处的修改会牵连出一些列依赖模块的级联式的修改，当这种现象发生时通常伴随而来的就是工作量评估失效，这使得后期开发者举步维艰。<br>
+模块依赖通常也会使得软件更加脆弱，当我们修改了某个模块并通过了单元测试，后期其他一个与本次修改无关的模块却出现了错误。这种脆弱性会极大降低开发的效率和质量，开发者通常在修复一个bug后又出现多个bug。<br>
+难以复用的影响将体现在方案设计时，当我们希望去复用某个模块时，发现该模块强依赖了一些我们不需要的模块，那么复用模块的工作量足以让设计人员知难而退，因为隔离重构的代价很可能已经超过重新实现一个新模块的代价了。</p>
+<h3 id="原则分析-4">2.5.3. 原则分析</h3>
+<p>依赖倒置原则的核心思想是加入抽象的中间层，来约束和复用依赖关系。模块间的依赖关系是可能变化的，而模块间的直接依赖固定了依赖关系，从而使得模块强耦合。通过避免直接依赖，替换为依赖相对稳定的抽象，使得低层实现模块可以任意替换，降低了模块间的耦合性。</p>
+<p>值得注意的是，在软件开发初期，我们很难预估模块间关系是否在未来会发生变化。盲目采用依赖倒置可能导致系统内模块关系反而更加复杂且实现工作量更大。</p>
+<h2 id="迪米特原则最少知识原则">2.6. 迪米特原则（最少知识原则）</h2>
+<p><strong>迪米特法则要求一个模块只与直接的朋友交流，尽量减少与陌生人的交互。</strong><br>
+迪米特法则（Law of Demeter,
+LoD）强调模块之间的交互应该是最小化的，鼓励模块之间的松耦合。</p>
+<h3 id="示例-5">2.6.1. 示例</h3>
+<pre><code class=" mermaid">classDiagram
+    direction LR
+    class Student &#123;
+        + getLibraryOpenTime() String
+    &#125;
+    class School &#123;
+        - Library library
+        + getLibrary() Library
+    &#125;
+    class Library &#123;
+        + getOpenTime() string
+    &#125;
+    Student ..&gt; School
+    School ..&gt; Library
+    Student ..&gt; Library
+</code></pre>
+<p>在这个类图中，Student 类直接调用了 School 类的 getLibrary()
+方法，然后通过返回的 Library 对象调用 getOpenTime() 方法。这里 Student
+直接与 Library 交互，违反了迪米特原则。<br>
+为减少类之间的耦合，可以修改如下： <pre><code class=" mermaid">classDiagram
+direction LR
+    class Student &#123;
+        + getLibraryOpenTime() String
+    &#125;
+    class School &#123;
+        - Library library
+        + getLibraryOpenTime() String
+    &#125;
+    class Library &#123;
+        + getOpenTime() string
+    &#125;
+    Student ..&gt; School
+    School ..&gt; Library
+</code></pre> Student 类不再直接调用
+Library 类的方法。相反，它调用 School 类的 getLibraryOpenTime()
+方法，这个方法内部可以调用 Library 类的 getOpenTime()
+方法。这样，Student 类只与它的直接朋友类 School
+交互，遵循了迪米特原则。</p>
+<h3 id="解决的问题-5">2.6.2. 解决的问题</h3>
+<p>如果一个模块与许多其他模块有过多的直接依赖，会导致以下问题：</p>
+<ul>
+<li>高耦合度：模块之间的紧密耦合使得系统的灵活性降低，修改一个模块可能会影响到多个其他模块。</li>
+<li>可维护性差：当模块之间的依赖关系复杂时，理解和维护代码变得更加困难，增加了出错的可能性。</li>
+<li>重用性低：高度耦合的模块往往难以在其他项目中复用，因为它们依赖于许多特定的实现。</li>
+</ul>
+<h3 id="原则分析-5">2.6.3. 原则分析</h3>
+<p>迪米特法则的核心思想是最小化依赖关系。遵循这一原则可以带来以下优点：</p>
+<ul>
+<li>降低耦合度：通过限制模块之间的交互，减少了依赖关系，使得模块更加独立。</li>
+<li>提高可维护性：模块之间的关系更加清晰，修改某个模块时不必担心影响到其他模块。</li>
+<li>增强可重用性：松耦合的模块可以更容易地在不同的上下文中重用。</li>
+</ul>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" class="category-chain-item">设计模式</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" class="print-no-link">#设计模式</a>
+      
+        <a href="/tags/%E8%AE%BE%E8%AE%A1%E5%8E%9F%E5%88%99/" class="print-no-link">#设计原则</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>设计模式-1-六大设计原则</div>
+      <div>https://blog.linum.top/2024/09/13/设计模式-1-六大设计原则/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>linum</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2024年9月13日</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>更新于</div>
+          <div>2024年12月6日</div>
+        </div>
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-cc-by"></i>
+                  </span>
+                </a>
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="NC - 非商业性使用">
+                    <i class="iconfont icon-cc-nc"></i>
+                  </span>
+                </a>
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="SA - 相同方式共享">
+                    <i class="iconfont icon-cc-sa"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2024/11/24/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-2-%E5%88%9B%E5%BB%BA%E5%9E%8B/" title="设计模式-2-创建型">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">设计模式-2-创建型</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2024/09/01/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B-1-%E4%B8%8A%E4%B8%8B%E6%96%87%E5%88%87%E6%8D%A2/" title="并发编程-1-上下文切换">
+                        <span class="hidden-mobile">并发编程-1-上下文切换</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  <script>
+  Fluid.utils.createScript('https://lib.baomitu.com/mermaid/11.0.0/mermaid.min.js', function() {
+    mermaid.initialize({"theme":"default"});
+
+    Fluid.utils.listenDOMLoaded(function() {
+      Fluid.events.registerRefreshCallback(function() {
+        if ('mermaid' in window) {
+          mermaid.init();
+        }
+      });
+    });
+  });
+</script>
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/5.0.0/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>
